@@ -163,5 +163,7 @@ const styles = StyleSheet.create({
 
         scroll:{
             backgroundColor:'#000',
+
+            
         }
 })

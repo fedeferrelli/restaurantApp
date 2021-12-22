@@ -50,7 +50,7 @@ const DetallePlato = () => {
                 
                 />
 
-                <Text styles={styles.buffer}></Text>
+               
              
         </View>
      );
