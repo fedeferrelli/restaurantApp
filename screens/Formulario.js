@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
-import {View, Text, StyleSheet, TextInput } from 'react-native';
-import { Image } from 'react-native-elements';
-import {Button } from 'react-native-elements';
+import {View, Text, StyleSheet, TextInput, Alert } from 'react-native';
+import { Image, Button, Icon } from 'react-native-elements';
+
 import globalStyles from '../styles/global'
 import PedidoContext from '../context/pedidos/pedidosContext';
 
@@ -12,9 +12,9 @@ const Formulario = () => {
 
     // pedido context
 
-    const { platoDetalle } = useContext(PedidoContext);
+    const { platoDetalle, guardarPedido } = useContext(PedidoContext);
 
-    const {nombre, precio, categoria, descripcion, id, image} = platoDetalle
+    const {nombre, precio, image} = platoDetalle
 
     // Hook para redireccionar
 
@@ -24,15 +24,66 @@ const Formulario = () => {
 
     const [unidades, setUnidades] = useState(1)
 
+    // state de importe total
+
+    const [importeTotal, setImporteTotal] = useState(precio)
+
+
+
     // funcion para adicionar cantidades via boton
 
     const upCantidades = () =>{
         setUnidades(unidades+1)
+        setImporteTotal((unidades+1)*precio)
     }
 
     const downCantidades = () =>{
-        
-        unidades>1 ? setUnidades(unidades-1) : 1
+
+        if(unidades>1){
+            setUnidades(unidades-1)
+            setImporteTotal((unidades-1)*precio)
+        }else{
+            setUnidades(1)
+            setImporteTotal(precio)
+
+        }
+    }
+
+    // funcion para confirma orden
+
+    const ConfirmarOrden = () =>{
+        Alert.alert(
+            `Deseas confirmar tu pedido?${"\n"}${unidades} ${nombre} por $${precio*unidades} `,
+           // `Deseas confirmar tu pedido?  ${unidades} ${nombre} por $${precio*unidades} `,
+            'Una vez confirmado el pedido no podrás modificarlo',
+            [{
+                text: 'Cancelar',
+                syle: 'cancel'
+            },
+            
+            {
+                text: 'Confirmar',
+                onPress: () =>{
+
+                    // almacenar el pedido
+                    const joaquin={
+                        ...platoDetalle,
+                        unidades,
+                        importeTotal                        
+                    }
+
+                    //console.log(joaquin)
+                    guardarPedido(joaquin)
+
+                    // navegar hacia el resumen
+
+                    navigation.navigate('resumenPedido')
+                    }
+            },
+
+            
+            ]
+        )
     }
 
 
@@ -50,10 +101,16 @@ const Formulario = () => {
 
            <View style={styles.unidades}>
                 <Button 
-                title="-"
+                //title="-"
                 buttonStyle={[styles.botonera, styles.botonLeft]}
                 titleStyle={globalStyles.buttonText}
                 onPress={()=>downCantidades()}
+                icon={{
+                    name: 'remove-circle',
+                    type: 'meterial-community',
+                    size: 28,
+                    color: 'black',               
+                  }}
 
                 />
                 
@@ -65,24 +122,31 @@ const Formulario = () => {
                  />
                 
                 <Button 
-                title="+"
+               // title="+"
                 buttonStyle={[styles.botonera, styles.botonRight]}
                 titleStyle={globalStyles.buttonText}
                 onPress={()=>upCantidades()}
+                icon={{
+                  name: 'add-circle',
+                  type: 'meterial-community',
+                  size: 28,
+                  color: 'black',               
+                }}
                 />
+                 
            </View>
 
            <Text style={styles.precioTotal}>Importe</Text>
 
-           <Text style={styles.precioTotal}>${unidades*precio}</Text>
+           <Text style={[styles.precioTotal, styles.importe]}>${importeTotal}</Text>
 
             </View>
 
             <Button 
-                title="Ordenar plato"
+                title="Confirmar pedido"
                 buttonStyle={globalStyles.button}
                 titleStyle={globalStyles.buttonText}
-                onPress={()=>navigation.navigate('formulario')}
+                onPress={()=>ConfirmarOrden()}
                 
                 />
 
@@ -184,6 +248,12 @@ const styles = StyleSheet.create({
         textAlign:'center',
         fontSize: 20,
         fontWeight: 'bold',
+        marginTop: 40,
+    },
+
+    importe:{
+        fontSize: 28,
+        marginTop: 10,
     }
 
 

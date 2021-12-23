@@ -3,14 +3,12 @@ import React, { useReducer, useState } from 'react';
 import PedidosReducer from './pedidosReducer';
 import PedidosContext from './pedidosContext';
 
-import { SELECCIONAR_PRODUCTOS } from '../../types/index'
+import { SELECCIONAR_PRODUCTOS, CONFIRMAR_PEDIDO } from '../../types/index'
 
 
 const PedidosState = (props) =>{
 
-    
-
-// crear statet inicial
+// crear state inicial
 
 const initialState = {
     pedido:[],
@@ -26,10 +24,19 @@ const [state, dispatch] = useReducer(PedidosReducer, initialState)
 const detallePlato = (plato) =>{
 
    dispatch({
-       type: SELECCIONAR_PRODUCTOS,
+       type: SELECCIONAR_PRODUCTOS,      
        payload: plato
    })
 
+}
+
+// cuando el usuario confirma el pedido 
+
+const guardarPedido = pedido =>{
+    dispatch({
+        type: CONFIRMAR_PEDIDO,        
+        payload: pedido
+    })
 }
 
 
@@ -38,7 +45,8 @@ const detallePlato = (plato) =>{
         value={{
             pedido: state.pedido,
             platoDetalle: state.plato,
-            detallePlato            
+            detallePlato,
+            guardarPedido            
         }}
         
         >

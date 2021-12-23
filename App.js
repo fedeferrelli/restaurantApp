@@ -65,7 +65,7 @@ const App = () =>{
         name='formulario'
         component={Formulario}
         options={{
-          title: 'Formulario'
+          title: 'Cantidades'
         }}
         />
 
